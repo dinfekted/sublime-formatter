@@ -51,3 +51,9 @@ will be corrupted and you will need to hit "undo" and do formatting manually.
 | Description                  | Keyboard shortcut | Command palette   |
 |------------------------------|-------------------|-------------------|
 | Format source code           | ctrl+shift+a      | Formatter: format |
+
+
+### Dependencies
+
+- https://github.com/shagabutdinov/sublime-semicolon
+- https://github.com/shagabutdinov/sublime-wrap-statement
