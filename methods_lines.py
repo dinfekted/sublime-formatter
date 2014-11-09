@@ -1,10 +1,17 @@
 import sublime
 import sublime_plugin
 
-from Expression import expression
-from Method import method
-from Statement import statement
 import re
+
+try:
+  from Expression import expression
+  from Method import method
+  from Statement import statement
+except ImportError:
+  sublime.error_message("Dependency import failed; please read readme for " +
+   "Formatter plugin for installation instructions; to disable this " +
+   "message remove this plugin")
+
 
 def set(view, edit):
   methods = method.extract_methods(view)

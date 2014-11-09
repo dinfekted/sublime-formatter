@@ -1,9 +1,15 @@
 import sublime
 import sublime_plugin
 
-from Expression import expression
-from types import LambdaType
 import re
+from types import LambdaType
+
+try:
+  from Expression import expression
+except ImportError:
+  sublime.error_message("Dependency import failed; please read readme for " +
+   "Formatter plugin for installation instructions; to disable this " +
+   "message remove this plugin")
 
 # todo inline blocks endings: f() { f() }
 # todo inline conditions: a ? b : c

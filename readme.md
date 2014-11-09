@@ -7,7 +7,7 @@ plugin that works (for pity) not as stable as it should be.
 
 ### Demo
 
-![Demo](https://raw.github.com/shagabutdinov/sublime-formatter/master/demo/demo.gif "Demo")
+![Demo](https://github.com/shagabutdinov/sublime-enhanced-demos/raw/master/formatter.gif "Demo")
 
 
 ### WARNING
@@ -55,5 +55,5 @@ will be corrupted and you will need to hit "undo" and do formatting manually.
 
 ### Dependencies
 
-- https://github.com/shagabutdinov/sublime-semicolon
-- https://github.com/shagabutdinov/sublime-wrap-statement
+* [Semicolon](https://github.com/shagabutdinov/sublime-semicolon)
+* [WrapStatement](https://github.com/shagabutdinov/sublime-wrap-statement)

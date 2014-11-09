@@ -1,12 +1,16 @@
 import sublime
 import sublime_plugin
-
-from Formatter import methods_lines
-from Formatter import common
-from Semicolon import semicolon
-from WrapStatement import wrap_statement
-
 import time
+
+from Formatter import methods_lines, common
+
+try:
+  from Semicolon import semicolon
+  from WrapStatement import wrap_statement
+except ImportError:
+  sublime.error_message("Dependency import failed; please read readme for " +
+   "Formatter plugin for installation instructions; to disable this " +
+   "message remove this plugin")
 
 class FormatEnhanced(sublime_plugin.TextCommand):
   def run(self, edit):

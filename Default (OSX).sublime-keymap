@@ -1,6 +1,9 @@
 [
   {
     "keys": ["ctrl+shift+a"],
-    "command": "format_enhanced"
+    "command": "format_enhanced",
+    "context": [
+      {"key": "setting.sublime_enhanced_keybindings", "operator": "equal", "operand": true},
+    ]
   }
 ]
