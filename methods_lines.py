@@ -12,11 +12,11 @@ except ImportError:
    "Formatter plugin for installation instructions; to disable this " +
    "message remove this plugin")
 
-
 def set(view, edit):
   methods = method.extract_methods(view)
   edit_point = None
   view_size = view.size()
+
   for current_method in reversed(methods):
     _, region, _ = method.get_regions(view, current_method)
 
@@ -79,7 +79,6 @@ def _set_method_starts(view, edit, current_method):
     replacement = "\n"
 
   region = sublime.Region(match.start(1) + shift, match.end(1) + shift)
-  print(match.start(1) + shift, match.end(1) + shift)
   if match.group(1) == replacement:
     return
 
