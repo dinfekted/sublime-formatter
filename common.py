@@ -79,6 +79,22 @@ def format_view(view, edit):
     {
       'expression': r'(?:[)\w]|\w[!?])((?!\s)|\n|\s{2,})(?=\{)',
       'replacements': [' '],
+      'scopes': [r'source\.(?!php)'],
+    },
+
+    # php: class ... {
+    {
+      'expression': r'(?:\n|^)\s*(?:class|trait).*?([ \t]|\s{2,})\{(?!\})',
+      'replacements': ["\n"],
+      'scopes': [r'source\.php'],
+    },
+
+    # php: function ... {
+    {
+      'expression': r'(?:\n|^)([ \t]*)(?:public|private|protected|final).*?\w+\(.*?\)(\s*){',
+      'replacements': [None, "\n$0"],
+      'groups': 2,
+      'scopes': [r'source\.php', r'source\.php'],
     },
 
     # block args: { |a1, a2|
@@ -99,9 +115,7 @@ def format_view(view, edit):
       'expression': r'(?:[\w)}\]]|\w[!?])((?!\s))' +
         r'(?=(?:[+\-*/=><%^&]|&&|\|\||\*\*)[\s\w$@({\[\'"])',
       'replacements': [' '],
-      'scope_lambdas': [
-        lambda scope: 'meta' not in scope
-      ],
+      'scopes': [r'^(?!=.*meta)']
     },
 
     # after operator: a * b
@@ -110,9 +124,7 @@ def format_view(view, edit):
         r'(?:[+\-*/=><%^&]|&&|\|\||\*\*)((?!\s))' +
         r'(?=[\w$@{(\[\'"])',
       'replacements': [' '],
-      'scope_lambdas': [
-        lambda scope: 'meta' not in scope
-      ],
+      'scopes': [r'^(?!=.*meta)']
     },
 
     # lines doubles
@@ -128,6 +140,7 @@ def format_view(view, edit):
 def _replace_spaces(view, edit, replacements):
   expressions, scope_lambdas, scopes, replacing = [], [], [], []
 
+  global_index = 1
   for replacement in replacements:
     if not isinstance(replacement, dict):
       replacement = {'expression': replacement}
@@ -146,9 +159,27 @@ def _replace_spaces(view, edit, replacements):
       scopes += [None] * replacement.get('groups', 1)
 
     if 'replacements' in replacement:
-      replacing += replacement['replacements']
+      for replacement_value in replacement['replacements']:
+        has_expression = (
+          replacement_value != None and
+          re.search(r'\$\d+', replacement_value) != None
+        )
+
+        if has_expression:
+          replacement_value = {
+            'replacement': re.sub(
+              r'(\$(\d+))',
+              lambda match: '$' + str(int(match.group(2)) + global_index),
+              replacement_value
+            ),
+            'has_expression': True,
+          }
+
+        replacing.append(replacement_value)
     else:
       replacing += [''] * replacement.get('groups', 1)
+
+    global_index += replacement.get('groups', 1)
 
   # "'string': True, 'comment': True" is for lesser view.scope_name requests
   options = {'nesting': True, 'string': True, 'comment': True}
@@ -156,12 +187,13 @@ def _replace_spaces(view, edit, replacements):
 
   text = view.substr(sublime.Region(0, view.size()))
   matches = re.finditer(regexp, text)
+
   for match in reversed(list(matches)):
     if match.lastindex == None:
       continue
 
     for index in reversed(range(0, match.lastindex)):
-      if match.group(index + 1) == replacing[index]:
+      if match.group(index + 1) == replacing[index] or replacing[index] == None:
         continue
 
       match_start = match.start(index + 1)
@@ -188,7 +220,18 @@ def _replace_spaces(view, edit, replacements):
         continue
 
       region = sublime.Region(match_start, match.end(index + 1))
-      view.replace(edit, region, replacing[index])
+      replacement = replacing[index]
+      if isinstance(replacement, dict):
+        if replacement['has_expression']:
+          replacement = re.sub(
+            r'(\$(\d+))',
+            lambda local_match: match.group(int(local_match.group(2))),
+            replacement['replacement']
+          )
+        else:
+          replacement = replacement['replacement']
+
+      view.replace(edit, region, replacement)
 
 class RemoveExcessSpaces(sublime_plugin.TextCommand):
   def run(self, edit):
