@@ -7,10 +7,11 @@ try:
   from Expression import expression
   from Method import method
   from Statement import statement
-except ImportError:
+except ImportError as error:
   sublime.error_message("Dependency import failed; please read readme for " +
    "Formatter plugin for installation instructions; to disable this " +
-   "message remove this plugin")
+   "message remove this plugin; message: " + str(error))
+  raise error
 
 def set(view, edit):
   methods = method.extract_methods(view)

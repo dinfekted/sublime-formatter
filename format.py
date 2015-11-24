@@ -7,10 +7,11 @@ from Formatter import methods_lines, common
 try:
   from Semicolon import semicolon
   from WrapStatement import wrap_statement
-except ImportError:
+except ImportError as error:
   sublime.error_message("Dependency import failed; please read readme for " +
    "Formatter plugin for installation instructions; to disable this " +
-   "message remove this plugin")
+   "message remove this plugin; message: " + str(error))
+  raise error
 
 class FormatEnhanced(sublime_plugin.TextCommand):
   def run(self, edit):

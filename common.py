@@ -6,10 +6,11 @@ from types import LambdaType
 
 try:
   from Expression import expression
-except ImportError:
+except ImportError as error:
   sublime.error_message("Dependency import failed; please read readme for " +
    "Formatter plugin for installation instructions; to disable this " +
-   "message remove this plugin")
+   "message remove this plugin; message: " + str(error))
+  raise error
 
 # todo inline blocks endings: f() { f() }
 # todo inline conditions: a ? b : c
